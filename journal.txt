@@ -1,0 +1,93 @@
+wikipedia
+papier récent
+
+BUT
+===
+- Within Glose context, false positives are not very problematic if both incorrectly labeled sentences
+- S'appuyer partiellement sur la recherche (pour démontrer aussi de la creatitivé).
+- Viser < 5% error rates.
+
+SOURCES & Notes
+========
+https://www.researchgate.net/publication/233757280_Sentence_boundary_detection_A_long_solved_problem
+https://pdfs.semanticscholar.org/5ae8/7b28b6af2ae28cf4b33b1d8db85bdc20dc4d.pdf
+wikipedia
+papier récent
+
+decision tree classifiers
+corpus http://www.statmt.org/europarl/v7/
+
+- Normalize !
+
+- Even on the edited ‘standard’ texts in our survey, the percentage
+of sentences ending in a full stop is only 87.7 (91.9% for sentence-final ‘.’, ‘?’, ." or ‘!’)
+
+
+https://www.aclweb.org/anthology/A97-1004.pdf
+
+TOOLS
+=====
+
+https://github.com/quantumblacklabs/kedro/ 
+overkill ?
+
+IDEAS
+=====
+
+
+Immediate surroundings +2 /-2
+Type : lowercase uppercase, présence de ponctuation
+
+abbreviation
+
+left and right both makes sense.
+
+=> Number of words
+=> Tree depth
+=> Tree variety
+=> presence d'au moins un verbe, au moins un sujet, au moins un nom
+
+2 steps process
+
+STEP 0 : Cleaning
+========
+normalize, ABREVIATIONS (replace temporarily).
+
+STEP 1 : HEURISTICS
+==========
+
+GOAL : very few false positive
+=> easy detection with abbreviations and classical terminaison
+=> + List d'abbreviations
+=> Honorific titles
+=> Is it really possible ?
+
+
+STEP 2 : SCORER & logistic regression
+==========
+pick all suspect signs (punctuation marks)
+-> immediate surroundings score (cf IDEAS)
+-> whole subsentences scorer (cf IDEAS)
+=> PLOT AUC to pick tradeoff.
+subsegment en analysant les phrases candidates => deuxième passe
+
+=> https://stanfordnlp.github.io/stanfordnlp/installation_usage.html#getting-started
+=> https://www.nltk.org/book/ch05.html => note : brown already tagged
+
+tagged at
+
+
+APPROACH
+========
+- Exploration first, jupyter (to find which features seems relevant).
+- Tight feedback loop to test if I am in the right direction.
+- TDD on the utils function used
+
+HTML to HTML
+============
+- Amend html (adding enclosing spans to mark sentences without breaking current html)...but still make SBD works :)
+- BUILD API 
+
+
+
+
