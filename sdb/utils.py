@@ -3,7 +3,7 @@ from itertools import islice
 
 
 def read_segmented_corpus_iter(corpus):
-    with open("./data/{corpus}/segmented.txt", "r") as f:
+    with open(f"./data/{corpus}/segmented.txt", "r") as f:
         line = f.readline()
         while line:
             yield line
