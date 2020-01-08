@@ -20,5 +20,5 @@ def ten_sentences_brown():
 def test_view_surroundings_end_sentences(ten_sentences_brown):
     surroundings = list(utils.raw_surroundings(ten_sentences_brown))
     assert len(surroundings) == 9, "no surroundings for last sentence"
-    assert tuple(surroundings[0]) == ("e.", "T")
-    assert tuple(surroundings[1]) == ("d.", "T")
+    assert tuple(surroundings[0]) == ("e.", "Th")
+    assert tuple(surroundings[1]) == ("d.", "Th")

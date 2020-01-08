@@ -22,7 +22,7 @@ def raw_surroundings(lines: Iterable[str])->List[tuple]:
     terminaison point
     """
     for l, l2 in zip(islice(lines, 0, None), islice(lines, 1, None)):
-        if len(l) > 2 and len(l2) > 0:
+        if len(l) > 2 and len(l2) > 1:
             last_letters_no_breaking_line = l[-3:-1]
-            first_new_letter = l2[:1]
-            yield (last_letters_no_breaking_line, first_new_letter)
+            first_new_letters = l2[:2]
+            yield (last_letters_no_breaking_line, first_new_letters)
