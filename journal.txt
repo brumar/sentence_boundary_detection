@@ -122,4 +122,8 @@ application
 improvements :
 - diagnose (coefficients, magistral errors)
 - crossvalidation
-- 
+
+=============
+at least one verb => tried => failed (no improvement)
+
+
