@@ -1,7 +1,8 @@
 import syspathfixer
 import statistics
-from sdb import utils
+from sdb import utils, features
 import pytest
+
 
 # DIRTY TRICK SO THAT sdb module can be found by manipulating PYTHONPATH
 
@@ -61,6 +62,7 @@ def test_evaluate_candidates():
     assert sum(boolean_evals) == 4
 
 
+@pytest.mark.long
 def test_evaluate_candidates_on_real_data():
     for corpus in ["wsj", "brown"]:
         unsegmented_string = "".join(utils.read_unsegmented_corpus_iter(corpus))
@@ -75,4 +77,17 @@ def test_evaluate_candidates_on_real_data():
         assert m > 0.5
 
 
-# def test_extract_features():
+def test_extract_feature_ends_with_newline():
+    multiline_input = """lines break are important
+    lines break may be hint. May very well be.
+    they should be considered as a feature"""
+
+    expectations = [True, False, True, True]
+
+    candidates_list = list(utils.split_at_all_candidates(multiline_input))
+    assert len(candidates_list) == 4
+
+    feature_dict_list = list(utils.extract_feature_newline(candidates_list))
+    assert len(feature_dict_list) == 4
+    for fdic, expected in zip(feature_dict_list, expectations):
+        assert fdic.get(features.LINEBREAK, False) is expected

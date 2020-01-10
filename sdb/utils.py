@@ -1,5 +1,6 @@
 from typing import List, Iterable
 from pathlib import Path
+from sdb import features
 
 file_path = Path(__file__)
 project_directory = file_path.parent.parent
@@ -56,6 +57,15 @@ def split_at_all_candidates(input_string_unsegmented: str) -> Iterable[str]:
                 current_line = []
         if current_line:
             yield "".join(current_line)
+
+
+def extract_feature_newline(candidates_list):
+    for c, cand in enumerate(candidates_list):
+        if c == 0:
+            continue
+        newline = cand.startswith("\n")
+        yield {features.LINEBREAK: newline}
+    yield {features.LINEBREAK: True}
 
 
 def is_gold_findable(gold: str):
