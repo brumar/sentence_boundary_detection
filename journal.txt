@@ -90,4 +90,20 @@ HTML to HTML
 
 
 
+=======================
 
+new notes
+
+
+Thus, to give a more
+representative picture of how the sentence segmenters succeed in segmenting raw running
+text, we propose a more general definition of the task, which considers the positions after every
+character as a potential boundary point. Hence, any gold-standard boundary missed will be
+counted as a false negative, even if there was no punctuation mark at that point.
+
+=> FAIR ENOUGH
+
+========
+
+pre-commit install
+DOcker would be very nice
