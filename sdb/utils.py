@@ -34,7 +34,8 @@ def split_at_all_candidates(input_string_unsegmented: str) -> Iterable[str]:
     # this behavior is tightly coupled with is_gold_findable
     # maintain both functions together
     ignore_next_car = False
-    for line in input_string_unsegmented.splitlines():
+    for line_loop in input_string_unsegmented.splitlines():
+        line = "\n" + line_loop
         current_line = []
         for index_car, car in enumerate(line):
             if ignore_next_car:
@@ -82,7 +83,7 @@ def evaluate_candidates(
             continue
         if advance_gold_iterator:
             current_gold = advance_to_next_findable_gold(gold_iterator)
-        buffer = buffer + cand
+        buffer = buffer + cand.strip()
 
         # print("cand->",cand)
         # print("gold->", current_gold)
@@ -115,9 +116,9 @@ def evaluate_candidates(
 
 def advance_to_next_findable_gold(gold_iterator) -> str:
     try:
-        current_gold = next(gold_iterator).rstrip()
+        current_gold = next(gold_iterator).strip()
         while not is_gold_findable(current_gold):
-            current_gold = current_gold + next(gold_iterator).rstrip()
+            current_gold = current_gold + next(gold_iterator).strip()
     except StopIteration:
         raise Exception(
             """Bug. the target sentences have all been passed but candidates remain.

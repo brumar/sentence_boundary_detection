@@ -1,12 +1,8 @@
-import sys
-from pathlib import Path
+import syspathfixer
 import statistics
 from sdb import utils
 import pytest
 
-file_path = Path(__file__)
-project_directory = file_path.parent.parent
-sys.path.append(str(project_directory))
 # DIRTY TRICK SO THAT sdb module can be found by manipulating PYTHONPATH
 
 INPUT_STRING_UNSEGMENTED = "".join(
@@ -51,7 +47,7 @@ def test_get_all_candidates():
 
     result = list(utils.split_at_all_candidates(INPUT_STRING_UNSEGMENTED))
     assert len(result) == 7
-    assert result[0] == "candidates can have various forms!"
+    assert result[0].strip() == "candidates can have various forms!"
     assert result[-2].strip() == 'There is also a special case, the "special case."'
 
 
