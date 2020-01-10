@@ -52,7 +52,7 @@ def test_get_all_candidates():
     result = list(utils.split_at_all_candidates(INPUT_STRING_UNSEGMENTED))
     assert len(result) == 7
     assert result[0] == "candidates can have various forms!"
-    assert result[-2].strip() == ('There is also a special case, the "special case."')
+    assert result[-2].strip() == 'There is also a special case, the "special case."'
 
 
 def test_evaluate_candidates():
@@ -77,3 +77,6 @@ def test_evaluate_candidates_on_real_data():
 
         m = statistics.mean(booleans_iterable)
         assert m > 0.5
+
+
+# def test_extract_features():

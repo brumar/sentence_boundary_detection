@@ -29,7 +29,7 @@ def _read_corpus(corpus, target):
             line = f.readline()
 
 
-def split_at_all_candidates(input_string_unsegmented: List[str]):
+def split_at_all_candidates(input_string_unsegmented: str) -> Iterable[str]:
     # tech debt warning
     # this behavior is tightly coupled with is_gold_findable
     # maintain both functions together
