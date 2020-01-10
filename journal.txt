@@ -107,3 +107,19 @@ counted as a false negative, even if there was no punctuation mark at that point
 
 pre-commit install
 DOcker would be very nice
+
+removing last candidate before regression is important
+
+=======
+10/01
+
+todo :
+application
+- produce sentences
+- html application
+- docker
+
+improvements :
+- diagnose (coefficients, magistral errors)
+- crossvalidation
+- 
