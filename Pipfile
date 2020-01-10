@@ -9,7 +9,15 @@ verify_ssl = true
 click = "*"
 jupyter = "*"
 pytest = "*"
+matplotlib = "*"
+nltk = "*"
 black = "*"
+sklearn = "*"
+numpy = "*"
+pre-commit = "*"
 
 [requires]
 python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true
