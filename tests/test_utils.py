@@ -2,6 +2,7 @@ import syspathfixer
 import statistics
 from sdb import utils, features
 import pytest
+import numpy as np
 
 
 # DIRTY TRICK SO THAT sdb module can be found by manipulating PYTHONPATH
@@ -74,7 +75,7 @@ def test_evaluate_candidates_on_real_data():
         )
 
         m = statistics.mean(booleans_iterable)
-        assert m > 0.5
+        assert m > 0.40
 
 
 def test_extract_feature_ends_with_newline():
@@ -91,3 +92,74 @@ def test_extract_feature_ends_with_newline():
     assert len(feature_dict_list) == 4
     for fdic, expected in zip(feature_dict_list, expectations):
         assert fdic.get(features.LINEBREAK, False) is expected
+
+
+def test_extract_feature_patterns_before():
+    multiline_input = """lines break are important
+ lines break may be hint. May very well be.
+they should be considered as a feature"""
+    print(multiline_input)
+
+    expectations_breaks = [True, False, True, True]
+    expectations_spaces = [True, True, False, True]
+
+    candidates_list = list(utils.split_at_all_candidates(multiline_input))
+    assert len(candidates_list) == 4
+
+    feature_dict_list = list(utils.extract_feature_newline(candidates_list))
+    assert len(feature_dict_list) == 4
+    for fdic, expected_b, expected_s in zip(
+        feature_dict_list, expectations_breaks, expectations_spaces
+    ):
+        assert fdic.get(features.LINEBREAK, False) is expected_b
+        assert fdic.get(features.NEXT_LEADING_WHITESPACE, False) is expected_s
+
+
+def test_extract_feature_patterns_next_line():
+    multiline_input = """lines break are important
+lines break may be hint. May very well be! "Do you think I just repeated myself ".
+they should be considered as a feature"""
+    candidates_list = list(utils.split_at_all_candidates(multiline_input))
+    assert len(candidates_list) == 5
+    feature_dict_list = list(utils.extract_feature_newline(candidates_list))
+    for dic in feature_dict_list:
+        sum = 0
+        for pattern_line_start in features.STARTING_LINE_PATTERNS:
+            if dic[pattern_line_start]:
+                sum += 1
+        assert sum <= 2, "each line at most one starting pattern and one ending pattern"
+
+    assert feature_dict_list[0][r"\w\w$"] is True
+    assert feature_dict_list[0][r"^\s?[a-z]"] is True
+    assert feature_dict_list[2][r"\!$"] is True
+
+
+@pytest.mark.long
+def test_prepare_np_structures_on_real_data():
+    for corpus in ["wsj", "brown"]:
+        unsegmented_string = "".join(utils.read_unsegmented_corpus_iter(corpus))
+        candidates = list(utils.split_at_all_candidates(unsegmented_string))
+        segmented = list(utils.read_segmented_corpus_iter(corpus))
+
+        booleans_iterable = utils.evaluate_candidates(list(candidates), list(segmented))
+        features_dic_iter = utils.extract_feature_newline(candidates)
+
+        array = utils.build_array_from_features_iterable(features_dic_iter)
+        assert array.shape[1] == (
+            len(features.ENDING_LINE_PATTERNS)
+            + len(features.STARTING_LINE_PATTERNS)
+            + 3
+        )
+        assert array.shape[0] > 1000
+
+        labels = np.asarray(list(booleans_iterable))
+        labels.reshape(1, array.shape[0])
+
+
+@pytest.mark.long
+def test_logistic_regression():
+    for corpus in ["wsj", "brown"]:
+        array, labels = utils.prepare_dataset(corpus)
+        logmodel = utils.raw_logistic_regression(array, labels)
+        precision = utils.compute_precision(labels, logmodel, array)
+        assert precision > 0.90

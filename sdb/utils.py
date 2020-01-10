@@ -1,6 +1,10 @@
 from typing import List, Iterable
 from pathlib import Path
 from sdb import features
+import re
+import numpy as np
+from sklearn.metrics import roc_curve, auc
+import nltk
 
 file_path = Path(__file__)
 project_directory = file_path.parent.parent
@@ -59,13 +63,58 @@ def split_at_all_candidates(input_string_unsegmented: str) -> Iterable[str]:
             yield "".join(current_line)
 
 
+def get_ending_line_patterns(candidate):
+    output = {}
+    for pattern in features.ENDING_LINE_PATTERNS:
+        output[pattern] = re.search(pattern, candidate) is not None
+    return output
+
+
+def get_starting_line_patterns(candidate):
+    output = {}
+    for pattern in features.STARTING_LINE_PATTERNS:
+        output[pattern] = re.search(pattern, candidate) is not None
+    return output
+
+
+def at_least_one_verb(candidate):
+    tokens = re.findall(r"\w+", candidate)  # naive tokenizer
+    pos = nltk.pos_tag(tokens)
+    for p in pos:
+        if p[1].startswith("V") or p[1] == "MD":
+            return True
+    return False
+
+
 def extract_feature_newline(candidates_list):
+
+    # This feature extraction function has been built such as candidates evaluation
+    # are postponed until next candidate has been processed
+    # This whi
     for c, cand in enumerate(candidates_list):
-        if c == 0:
-            continue
-        newline = cand.startswith("\n")
-        yield {features.LINEBREAK: newline}
-    yield {features.LINEBREAK: True}
+        if c != 0:
+            starting_line_patterns = get_starting_line_patterns(cand)
+            # the first candidate is evaluated with its ending line pattern
+            # as well as its starting line pattern
+
+            newline = cand.startswith("\n")
+            leading_whitespace = cand.startswith("\n ") or cand.startswith(" ")
+            yield {
+                features.LINEBREAK: newline,
+                features.NEXT_LEADING_WHITESPACE: leading_whitespace,
+                **ending_line_patterns,
+                **starting_line_patterns,
+                features.NB_WORDS: nb_words,
+            }
+        ending_line_patterns = get_ending_line_patterns(cand)
+        nb_words = len(re.findall(r"\w+", cand))
+    yield {
+        features.LINEBREAK: True,
+        features.NEXT_LEADING_WHITESPACE: True,
+        **ending_line_patterns,
+        **starting_line_patterns,
+        features.NB_WORDS: nb_words,
+    }
 
 
 def is_gold_findable(gold: str):
@@ -90,6 +139,7 @@ def evaluate_candidates(
     buffer = ""
     for c, cand in enumerate(candidates):
         if not cand or cand.isspace():
+            yield False
             continue
         if advance_gold_iterator:
             current_gold = advance_to_next_findable_gold(gold_iterator)
@@ -148,3 +198,44 @@ def raw_surroundings(lines: Iterable[str]) -> List[tuple]:
             first_new_letters = l[:2]
             yield (last_letters_no_breaking_line, first_new_letters)
         previous_line = l
+
+
+def build_array_from_features_iterable(features_dict):
+
+    # totally unoptimized
+    big_list = []
+
+    for d, dic in enumerate(features_dict):
+        values = dic.values()
+        big_list.extend(values)
+    n = len(values)
+    return np.asarray(big_list).reshape((d + 1, n))
+
+
+def raw_logistic_regression(features, labels):
+    from sklearn.linear_model import LogisticRegression
+
+    logmodel = LogisticRegression(max_iter=10000)
+    logmodel.fit(features, labels)
+    return logmodel
+
+
+def prepare_dataset(corpus):
+    unsegmented_string = "".join(read_unsegmented_corpus_iter(corpus))
+    candidates = list(split_at_all_candidates(unsegmented_string))
+    segmented = list(read_segmented_corpus_iter(corpus))
+    booleans_iterable = evaluate_candidates(list(candidates), list(segmented))
+    features_dic_iter = extract_feature_newline(candidates)
+    array = build_array_from_features_iterable(features_dic_iter)
+    labels = np.asarray(list(booleans_iterable))
+    return array, labels
+
+
+def compute_precision(labels, logmodel, features):
+    predictions = logmodel.predict(features)
+    errors = 0
+    for p, label in zip(predictions, labels):
+        if p != label:
+            errors += 1
+    precision = 1 - (errors / len(predictions))
+    return precision
