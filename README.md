@@ -1,7 +1,8 @@
 # Sentence Boundary Detection
 
 This repository **attempts** to detect [sentence boundaries](https://en.wikipedia.org/wiki/Sentence_boundary_disambiguation) (which is an harder problem than it appears at first sight).
-It also **attempts** to apply sentence boundaries to html (which means dealing with markers).
+It also **attempts** to apply its algorithm to segment html (surrouding sentences with `<span class="sentence">[...]</span>`
+
 
 Don't use this repository in production as it's not battle tested yet. Some functions seems brittle and error recovery is inexistent. There are more mature tool out there like nltk punkt.
 
@@ -15,7 +16,7 @@ Be warned that there is not setting files. If you need a different behavior (set
 
 Use python 3.7 or later. Check it with
 ```
-python3 --version
+$ python3 --version
 ```
 
 Explanation : f-strings are used and there are place where dictionaries are expected to be ordered (which is almost the case for 3.6, but without any warranties).
@@ -24,17 +25,17 @@ Explanation : f-strings are used and there are place where dictionaries are expe
 Install the dependencies with your favorite virtualenv manager. 
 Unless you have better options, I favor using venv as follow :
 ```
-python3 -m venv .venv --without-pip
-source .venv/bin/activate # or .\venv\Scripts\activate on windows
-wget https://bootstrap.pypa.io/get-pip.py  # or manually download it on windows
-python3 get-pip.py
-python3 -m pip install -r requirements.txt
+$ python3 -m venv .venv --without-pip
+$ source .venv/bin/activate # or .\venv\Scripts\activate on windows
+$ wget https://bootstrap.pypa.io/get-pip.py  # or manually download it on windows
+$ python3 get-pip.py
+$ python3 -m pip install -r requirements.txt
 ```
 
-With pipenv (taking as granted that it's already installed)
+With [pipenv](https://github.com/pypa/pipenv) (taking as granted that it's already installed)
 ```
-pipenv install
-pipenv shell
+$ pipenv install
+$ pipenv shell
 ```
 
 ## Train the Model
@@ -44,12 +45,12 @@ First download the resources (thanks to Read & Al. 2012 for exposing clean datas
 Given your dependencies installed and your virtualenv activated.
 
 ```
-python cli.py download-corpus
+$ python cli.py download-corpus
 ```
 
 Train the logistic regression on brown or wsj
 ```
-python cli.py train brown --modelname myfirstmodel
+$ python cli.py train brown --modelname myfirstmodel
 ```
 
 ## Use the Model
@@ -57,8 +58,8 @@ python cli.py train brown --modelname myfirstmodel
 Use your model to segment text file
 
 ```
-python cli.py segment ./examples/boll.txt --modelname mymodel > boll_output.txt
-python cli.py segment ./examples/boll.html --modelname mymodel > boll_output.html
+$ python cli.py segment ./examples/boll.txt --modelname mymodel > boll_output.txt
+$ python cli.py segment ./examples/boll.html --modelname mymodel > boll_output.html
 ```
 Or without stdout redirection (the "> file" part) if you prefer to see the result in your shell.
 
@@ -70,11 +71,11 @@ Or without stdout redirection (the "> file" part) if you prefer to see the resul
 Few tests have been put in place.
 Run it with
 ```
-pytest
+$ pytest
 ```
 To avoid long running tests (which are running on the whole wsj/brown corpus), you can use the dedicated marker to filter these tests out
 ```
-pytest -m "not long"
+$ pytest -m "not long"
 ```
 
 ## Style
