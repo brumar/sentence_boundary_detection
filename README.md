@@ -81,12 +81,13 @@ pytest -m "not long"
 
 # Approach
 
-I picked the logistic regression for convenience (I know this kind of model)
+I tried my luck with a [logistic regression](https://en.wikipedia.org/wiki/Logistic_regression) on common patterns that can be observed both at the start and the end of a sentence and also other features.
 
-Patterns of sentences terminaison/continuation can be found in the `features.py` file. 
+I picked the logistic regression for convenience (I know this kind of model). I chose to not dig too much into the state-of-the-art approaches for the sake of the "challenge" to come to a solution myself.
+
+Patterns of sentences terminaison can be found in the `features.py` file. 
 They have been also handpicked and hardcoded after an explorative phase. I did not take time to assess their importance. But I started with only these features which granted around 90% + success rate.
 
-I tried my luck with a logistic regression on common patterns that can be observed both at the start and the end of a sentence.
 I also added handpicked hardcoded abbreviations (advice from the wikipedia page) and also added a numerical feature (number of words).
 Both improved the model on both corpus.
 
@@ -122,6 +123,7 @@ This repository has been set up for a recruitement pupose. I don't think I'll ma
 - Separate dev requirements (black, pytest, jupyter) from user requirements
 - Dokerize the application
 - As the number of words is an important feature, it may be useful to classify with a multi layer approach like.
+- Adapt the classifier so that False positive may be more damaging than False negative. Maybe set the coefficient for the feature "number of words" to a fixed level, a bit higher than its trained value. 
 
 
 ## Credits

@@ -169,4 +169,4 @@ def test_logistic_regression():
         array, labels = utils.prepare_dataset(corpus)
         logmodel = utils.raw_logistic_regression(array, labels)
         precision = utils.compute_precision(labels, logmodel, array)
-        assert precision > 0.95
+        assert precision > 0.98

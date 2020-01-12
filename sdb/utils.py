@@ -134,6 +134,9 @@ def extract_feature_newline(candidates_list):
             }
         ending_line_patterns = get_ending_line_patterns(cand)
         nb_words = len(re.findall(r"\w+", cand))
+
+    # NOTE : TRy to remove this yield as the last sentence makes not sense to be evaluated
+    # and the values are bunk anyway
     yield {
         features.LINEBREAK: True,
         features.NEXT_LEADING_WHITESPACE: True,
