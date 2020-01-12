@@ -3,14 +3,13 @@
 This repository **attempts** to detect [sentence boundaries](https://en.wikipedia.org/wiki/Sentence_boundary_disambiguation) (which is an harder problem than it appears at first sight).
 It also **attempts** to apply its algorithm to segment html (surrouding sentences with `<span class="sentence">[...]</span>`
 
-
 Don't use this repository in production as it's not battle tested yet. Some functions seems brittle and error recovery is inexistent. There are more mature tool out there like [nltk punkt](https://www.nltk.org/api/nltk.tokenize.html).
 
 It has also only been tested on the english language.
 
 # Usage
 
-Be warned that there is not setting files. If you need a different behavior (set of features, tweaks on the HTML output), you have to edit the source code itself.
+Be warned that there are no setting files. If you need a different behavior (set of features, tweaks on the HTML output), you have to edit the source code itself.
 
 ## Installation
 
@@ -32,7 +31,7 @@ $ python3 get-pip.py
 $ python3 -m pip install -r requirements.txt
 ```
 
-With [pipenv](https://github.com/pypa/pipenv) (taking as granted that it's already installed)
+Alternatively, you can use [pipenv](https://github.com/pypa/pipenv) (taking as granted that it's already installed)
 ```
 $ pipenv --python=3.7 install
 $ pipenv shell
@@ -40,29 +39,31 @@ $ pipenv shell
 
 ## Train the Model
 
-It's required to train the model before leveraging it.
+It's required to train the model before using it.
 First download the resources (thanks to Read & Al. 2012 for exposing clean datasets in the open, ref at the end).
 Given your dependencies installed and your virtualenv activated,
-
 ```
-$ python cli.py download-corpus brown
+$ python cli.py download-corpus
 ```
-(or wsj instead brown)
 
-Train the logistic regression on brown or wsj corpus
+Train the logistic regression on [brown](https://en.wikipedia.org/wiki/Brown_Corpus) or [wsj](https://catalog.ldc.upenn.edu/LDC2000T43) corpus.
 ```
 $ python cli.py train brown --modelname myfirstmodel
 ```
 
 ## Use the Model
 
-Use your model to segment text file
+Use your model to segment a text file.
+Output of txt files will be represented as one sentence per line.
+Output for html files will contains amended html with `<span class="sentence">` markups
 
 ```
 $ python cli.py segment ./examples/boll.txt --modelname myfirstmodel > boll_output.txt
 $ python cli.py segment ./examples/boll.html --modelname myfirstmodel --ishtml > boll_output.html
 ```
-Or without stdout redirection (the "> file" part) if you prefer to see the result in your shell.
+(Or without stdout redirection (the "> file" part) if you prefer to see the result in your shell)
+
+
 
 # For developpers
 
@@ -81,7 +82,7 @@ $ pytest -m "not long"
 
 ## Style
 
-black and flake8 has been used (following this [tutorial](https://ljvmiranda921.github.io/notebook/2018/06/21/precommits-using-black-and-flake8/))
+[black](https://black.readthedocs.io/) and [flake8](http://flake8.pycqa.org/en/latest/) has been used (following this [tutorial](https://ljvmiranda921.github.io/notebook/2018/06/21/precommits-using-black-and-flake8/))
 
 # For Data Science People
 
@@ -118,19 +119,20 @@ You can find some mess reflecting some of my ideas (in order to keep track of th
 
 This repository has been set up for a recruitement purpose. I don't think I'll invest time to properly maintain it. If you fork it and do nice things, shout me an email so that I can publicize your fork on this Readme.
 
-## TODOS
+## TODOS And Ideas
 
-- Normalization step user inputs (more on this in the quoted article).
 - Treat gracefully erroneous input (like unexisting files)
 - Inspect and improve the model, use crossvalidation, inspect awesome fails (i.e couple of sentences where the model gives high confidenceand yet fails miserably)
+- Normalisation step of unicode characters (cf article at the end).
 - Plot the ROC curve !
 - Test more thorougly html and text input, possibly with a generation mechanism.
 - Refactor/Comment hard-to-reason-about functions
 - Separate dev requirements (black, pytest, jupyter) from user requirements
-- Dokerize the application
-- As the number of words is an important feature, it may be useful to classify with a multi layer approach like.
-- Adapt the classifier so that False positive may be more damaging than False negative. Maybe set the coefficient for the feature "number of words" to a fixed level, a bit higher than its trained value. 
-- Use beautiful soup instead of handwritten markup detection
+- Dokerize the application.
+- As the "number of words" is an important feature, it may be useful to classify with a multi pass approach to conservatively accept candidates as sentences on a first pass, then progressively accept more and more sentences.
+- Consider that False positive may be more damaging than False negative and adapt the classifier. Maybe setting the coefficient for the feature "number of words" to a fixed level, a bit more impactful than its trained value.
+- Use beautiful soup instead of naive markup detection using regexes.
+- Consider false posivite patterns such as the ellipis (...)
 
 
 ## Credits
