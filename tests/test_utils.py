@@ -54,6 +54,7 @@ def test_get_all_candidates():
     assert result[-2].strip() == 'There is also a special case, the "special case."'
 
 
+@pytest.mark.skip(reason="not abbrev anymore")
 def test_abbreviations_parsing():
     abbrevs = utils.read_abbrevs()
     assert len(abbrevs) > 100

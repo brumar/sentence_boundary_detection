@@ -3,6 +3,47 @@ import re
 TEXT = 0
 MARKUP = 1
 
+LINE_BREAKERS = set(
+    [
+        "<address>",
+        "<article>",
+        "<aside>",
+        "<blockquote>",
+        "<canvas>",
+        "<dd>",
+        "<div>",
+        "<dl>",
+        "<dt>",
+        "<fieldset>",
+        "<figcaption>",
+        "<figure>",
+        "<footer>",
+        "<form>",
+        "<h1>",
+        "<h2>",
+        "<h3>",
+        "<h4>",
+        "<h5>",
+        "<h6",
+        "<header>",
+        "<hr>",
+        "<li>",
+        "<main>",
+        "<nav>",
+        "<noscript>",
+        "<ol>",
+        "<p>",
+        "<pre>",
+        "<section>",
+        "<table>",
+        "<tfoot>",
+        "<ul>",
+        "<video>",
+    ]
+)
+LINE_BREAKERS.add("<br>")
+LINE_BREAKERS.add("<br/>")
+
 
 def append_if_not_empty(l, s, markup_or_text):
     if markup_or_text not in (TEXT, MARKUP):
@@ -28,6 +69,9 @@ def tokenized_to_text(tokenized):
     for element in tokenized:
         if element[0] == TEXT:
             text.append(element[1])
+        if element[0] == MARKUP and element[1] in LINE_BREAKERS:
+            if text[-1:] != ["\n"]:
+                text.append("\n")
     return "".join(text)
 
 

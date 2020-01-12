@@ -4,7 +4,7 @@ This repository **attempts** to detect [sentence boundaries](https://en.wikipedi
 It also **attempts** to apply its algorithm to segment html (surrouding sentences with `<span class="sentence">[...]</span>`
 
 
-Don't use this repository in production as it's not battle tested yet. Some functions seems brittle and error recovery is inexistent. There are more mature tool out there like nltk punkt.
+Don't use this repository in production as it's not battle tested yet. Some functions seems brittle and error recovery is inexistent. There are more mature tool out there like [nltk punkt](https://www.nltk.org/api/nltk.tokenize.html).
 
 It has also only been tested on the english language.
 
@@ -34,21 +34,22 @@ $ python3 -m pip install -r requirements.txt
 
 With [pipenv](https://github.com/pypa/pipenv) (taking as granted that it's already installed)
 ```
-$ pipenv install
+$ pipenv --python=3.7 install
 $ pipenv shell
 ```
 
 ## Train the Model
 
 It's required to train the model before leveraging it.
-First download the resources (thanks to Read & Al. 2012 for exposing clean datasets in the open).
-Given your dependencies installed and your virtualenv activated.
+First download the resources (thanks to Read & Al. 2012 for exposing clean datasets in the open, ref at the end).
+Given your dependencies installed and your virtualenv activated,
 
 ```
-$ python cli.py download-corpus
+$ python cli.py download-corpus brown
 ```
+(or wsj instead brown)
 
-Train the logistic regression on brown or wsj
+Train the logistic regression on brown or wsj corpus
 ```
 $ python cli.py train brown --modelname myfirstmodel
 ```
@@ -58,8 +59,8 @@ $ python cli.py train brown --modelname myfirstmodel
 Use your model to segment text file
 
 ```
-$ python cli.py segment ./examples/boll.txt --modelname mymodel > boll_output.txt
-$ python cli.py segment ./examples/boll.html --modelname mymodel > boll_output.html
+$ python cli.py segment ./examples/boll.txt --modelname myfirstmodel > boll_output.txt
+$ python cli.py segment ./examples/boll.html --modelname myfirstmodel --ishtml > boll_output.html
 ```
 Or without stdout redirection (the "> file" part) if you prefer to see the result in your shell.
 
@@ -100,11 +101,11 @@ Both improved the model on both corpus.
 # Results
 
 On terminaison candidates (which are linebreaks, punctuation and special symbols (?!;:.), and also .".
-The Logistic regression touts a 98% + classification success rate on both brown and wsj dataset.
+The Logistic regression **touts a 98%+ classification success rate** on both brown and wsj dataset.
 But the model is not refined at all and work remains. Specifically: 
-- Overlearning may be a reality, the common crossvalidation (intra or intercorpus) have not been done.
+- Overlearning may be a reality, the common crossvalidation step (intra or intercorpus) has not been done.
 - Coefficients on the logistic regression have not been inspected at all. Some features could be excluded.
-- Some rare (yet with a frequency that has to be determined) terminaison points were not considered by our model as valid candidates, hence they were not counted as missed as they should (this is a common pitfall, as pointed by the article cited at the end of the readme.
+- Some rare (yet with a frequency that has to be determined) terminaison points were not considered by our model as valid candidates, hence they were not counted as missed as they should (this is a common pitfall, as pointed by the article cited at the end of the readme).
 
 # Notes
 
@@ -115,7 +116,7 @@ You can find some mess reflecting some of my ideas (in order to keep track of th
 
 ## Final notes
 
-This repository has been set up for a recruitement pupose. I don't think I'll maintain it. If you fork it and do nice things, shout me an email so that I can publicize your fork on this Readme.
+This repository has been set up for a recruitement purpose. I don't think I'll invest time to properly maintain it. If you fork it and do nice things, shout me an email so that I can publicize your fork on this Readme.
 
 ## TODOS
 
@@ -129,6 +130,7 @@ This repository has been set up for a recruitement pupose. I don't think I'll ma
 - Dokerize the application
 - As the number of words is an important feature, it may be useful to classify with a multi layer approach like.
 - Adapt the classifier so that False positive may be more damaging than False negative. Maybe set the coefficient for the feature "number of words" to a fixed level, a bit higher than its trained value. 
+- Use beautiful soup instead of handwritten markup detection
 
 
 ## Credits
