@@ -3,11 +3,9 @@
 This repository **attempts** to detect [sentence boundaries](https://en.wikipedia.org/wiki/Sentence_boundary_disambiguation) (which is an harder problem than it appears at first sight).
 It also **attempts** to apply sentence boundaries to html (which means dealing with markers).
 
-# Limitations
+Don't use this repository in production as it's not battle tested yet. Some functions seems brittle and error recovery is inexistent. There are more mature tool out there like nltk punkt.
 
-Don't use this repository in production as it's not battle tested yet. Some functions seems brittle and error recovery is inexistent.
-It has also only been tested or english.
-
+It has also only been tested on the english language.
 
 # Usage
 
