@@ -46,7 +46,7 @@ First download the resources (thanks to Read & Al. 2012 for exposing clean datas
 Given your dependencies installed and your virtualenv activated.
 
 ```
-python cli.py download-resources
+python cli.py download-corpus
 ```
 
 Train the logistic regression on brown or wsj

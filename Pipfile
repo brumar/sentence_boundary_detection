@@ -9,6 +9,7 @@ verify_ssl = true
 click = "*"
 jupyter = "*"
 pytest = "*"
+<<<<<<< HEAD
 matplotlib = "*"
 nltk = "*"
 black = "*"
@@ -21,3 +22,9 @@ python_version = "3.7"
 
 [pipenv]
 allow_prereleases = true
+=======
+black = "*"
+
+[requires]
+python_version = "3.7"
+>>>>>>> 008179983d6717c5652bd5cbaaba60ea09326083

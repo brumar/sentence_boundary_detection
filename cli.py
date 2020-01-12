@@ -4,9 +4,6 @@ import os
 from sdb import utils
 
 
-freqlist = "https://raw.githubusercontent.com/hermitdave/FrequencyWords/master/content/2018/en/en_full.txt"
-
-
 @click.group()
 def cli():
     pass
@@ -14,7 +11,7 @@ def cli():
 
 @cli.command()
 @click.option("--force", help="force redownload", is_flag=True)
-def download_ressources(force):
+def download_corpus(force):
     """get the WSJ corpus and brown corpus (segmented and unsegmented)"""
     # source : Sentence boundary detection: A long solved problem? J.Read 2012
 

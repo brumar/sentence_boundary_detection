@@ -1,8 +1,9 @@
 import syspathfixer
 import statistics
-from sdb import utils, features
 import pytest
 import numpy as np
+
+from sdb import utils, features
 
 
 # DIRTY TRICK SO THAT sdb module can be found by manipulating PYTHONPATH
