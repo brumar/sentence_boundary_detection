@@ -1,10 +1,12 @@
 from typing import List, Iterable
 from pathlib import Path
-from sdb import features
+from sdb import features, html
 import re
 import numpy as np
 from sklearn.metrics import roc_curve, auc
 import nltk
+import math
+import pickle
 
 file_path = Path(__file__)
 project_directory = file_path.parent.parent
@@ -23,6 +25,18 @@ def read_unsegmented_corpus_iter(corpus: str):
 def read_segmented_corpus_iter(corpus: str):
     target = "segmented.txt"
     yield from _read_corpus(corpus, target)
+
+
+def read_abbrevs(lg="en"):
+    output = {}
+    filepath = DATA_DIR / Path("freqlist") / Path(lg) / Path(f"{lg}_full.txt")
+    with open(filepath, "r") as f:
+        for line in f:
+            vals = line.split()
+            if vals[0].endswith("."):
+                vals[1] = int(vals[1])
+                output[vals[0]] = round(math.log(vals[1]))
+    return output
 
 
 def _read_corpus(corpus, target):
@@ -86,6 +100,14 @@ def at_least_one_verb(candidate):
     return False
 
 
+def get_interaction_patterns(starting_line_patterns, ending_line_patterns):
+    return {
+        features.MOST_COMMON_PATTERN: (
+            starting_line_patterns[r"^\s?[A-Z]"] and ending_line_patterns[r"[a-z]\.$"]
+        )
+    }
+
+
 def extract_feature_newline(candidates_list):
 
     # This feature extraction function has been built such as candidates evaluation
@@ -94,6 +116,9 @@ def extract_feature_newline(candidates_list):
     for c, cand in enumerate(candidates_list):
         if c != 0:
             starting_line_patterns = get_starting_line_patterns(cand)
+            interaction_patterns = get_interaction_patterns(
+                starting_line_patterns, ending_line_patterns
+            )
             # the first candidate is evaluated with its ending line pattern
             # as well as its starting line pattern
 
@@ -104,6 +129,7 @@ def extract_feature_newline(candidates_list):
                 features.NEXT_LEADING_WHITESPACE: leading_whitespace,
                 **ending_line_patterns,
                 **starting_line_patterns,
+                **interaction_patterns,
                 features.NB_WORDS: nb_words,
             }
         ending_line_patterns = get_ending_line_patterns(cand)
@@ -113,6 +139,7 @@ def extract_feature_newline(candidates_list):
         features.NEXT_LEADING_WHITESPACE: True,
         **ending_line_patterns,
         **starting_line_patterns,
+        **interaction_patterns,
         features.NB_WORDS: nb_words,
     }
 
@@ -231,6 +258,41 @@ def prepare_dataset(corpus):
     return array, labels
 
 
+def segment_html(html_string, model):
+    tokenized = html.markup_tokenise(html_string)
+    full_text = html.tokenized_to_text(tokenized)
+    result_full_text = segment(full_text, model)
+    flat_segmented_html = html.surround_and_flatten(
+        result_full_text, start='<span class="sentence">', end="</span>"
+    )
+    result = html.merge(html_string, flat_segmented_html)
+    return [result]
+
+
+def segment(unsegmented_string, model):
+    candidates = list(split_at_all_candidates(unsegmented_string))
+    features_dic_iter = extract_feature_newline(candidates)
+    array = build_array_from_features_iterable(features_dic_iter)
+    predictions = model.predict(array)
+    output = []
+    buffer = ""
+    for candidate, prediction in zip(candidates, predictions):
+        buffer += candidate.replace("\n", "")
+        if prediction:
+            output.append(buffer)
+            buffer = ""
+    if buffer:
+        output.append(buffer)
+    return output
+
+
+def load_model(modelname):
+    if not modelname.endswith(".pkl"):
+        modelname += ".pkl"
+    with open(f"./models/{modelname}", "rb") as f:
+        return pickle.load(f)
+
+
 def compute_precision(labels, logmodel, features):
     predictions = logmodel.predict(features)
     errors = 0
@@ -239,3 +301,16 @@ def compute_precision(labels, logmodel, features):
             errors += 1
     precision = 1 - (errors / len(predictions))
     return precision
+
+
+def train_model_on_corpus(corpus):
+    array, labels = prepare_dataset(corpus)
+    logmodel = raw_logistic_regression(array, labels)
+    precision = compute_precision(labels, logmodel, array)
+    logmodel._sbd_precision = precision
+    return logmodel
+
+
+def save_model(model, output):
+    with open(output, "wb") as f:
+        pickle.dump(model, f)

@@ -115,6 +115,7 @@ removing last candidate before regression is important
 
 todo :
 application
+- use pretrained model on both WSJ and brown
 - produce sentences
 - html application
 - docker

@@ -53,6 +53,13 @@ def test_get_all_candidates():
     assert result[-2].strip() == 'There is also a special case, the "special case."'
 
 
+def test_abbreviations_parsing():
+    abbrevs = utils.read_abbrevs()
+    assert len(abbrevs) > 100
+    assert "dr." in abbrevs.keys()
+    assert "mr." in abbrevs.keys()
+
+
 def test_evaluate_candidates():
 
     result = list(utils.split_at_all_candidates(INPUT_STRING_UNSEGMENTED))
@@ -148,7 +155,7 @@ def test_prepare_np_structures_on_real_data():
         assert array.shape[1] == (
             len(features.ENDING_LINE_PATTERNS)
             + len(features.STARTING_LINE_PATTERNS)
-            + 3
+            + 4
         )
         assert array.shape[0] > 1000
 
@@ -162,4 +169,4 @@ def test_logistic_regression():
         array, labels = utils.prepare_dataset(corpus)
         logmodel = utils.raw_logistic_regression(array, labels)
         precision = utils.compute_precision(labels, logmodel, array)
-        assert precision > 0.90
+        assert precision > 0.95
