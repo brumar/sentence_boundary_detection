@@ -39,7 +39,7 @@ def download_ressources(force):
 @cli.command()
 @click.argument("corpus")
 @click.option("--modelname", help="model name (for saving purpose)")
-def train_model(corpus=None, modelname=None):
+def train(corpus=None, modelname=None):
     if corpus is None:
         corpus = "brown"
     if modelname is None:
