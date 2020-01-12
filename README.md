@@ -64,6 +64,8 @@ python cli.py segment ./examples/boll.html --modelname mymodel > boll_output.htm
 ```
 Or without stdout redirection (the "> file" part) if you prefer to see the result in your shell.
 
+# For developpers
+
 
 ## Run the tests
 
@@ -77,7 +79,11 @@ To avoid long running tests (which are running on the whole wsj/brown corpus), y
 pytest -m "not long"
 ```
 
-# Information about the model
+## Style
+
+black and flake8 has been used (following this [tutorial](https://ljvmiranda921.github.io/notebook/2018/06/21/precommits-using-black-and-flake8/))
+
+# For Data Science People
 
 # Approach
 
