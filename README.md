@@ -128,7 +128,7 @@ This repository has been set up for a recruitement purpose. I don't think I'll i
 ## TODOS And Ideas
 
 - Treat gracefully erroneous input (like unfindable files)
-- Turn dictionnary iterators.
+- Encapsulate dictionnary iterators into classes.
 - Inspect and improve the model, use crossvalidation, inspect awesome fails (i.e couples of sentences where the model gives high confidence and yet fails miserably)
 - Normalisation step on user inputs of unicode characters (cf article at the end of the readme)
 - [html special cars](https://www.degraeve.com/reference/specialcharacters.php) must be taken care of (presence of symbols such as ;)
