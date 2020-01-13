@@ -10,7 +10,7 @@ It has also only been tested on the english language.
 The HTML feature will respect existing inline tags (e.g `span`, `strong` ...). If a sentence partially overlaps with such tags, they will be closed and reopened. But this behavior **will mess** with blocking tags such as p, div et...
 
 In the future : 
-- Sentence detection will occur only inside HTML sections that contains not a single blocking tags
+- Sentence detection will occur only inside HTML sections that contains not a single blocking tag
 - An opening blocking tag such as `<p>` will be interpreted as linebreak.
 
 Be warned that there are no setting files. If you need a different behavior (set of features, tweaks on the HTML output), you have to edit the source code itself.
