@@ -1,28 +1,34 @@
 # Sentence Boundary Detection
 
-This repository **attempts** to detect [sentence boundaries](https://en.wikipedia.org/wiki/Sentence_boundary_disambiguation) (which is an harder problem than it appears at first sight).
-It also **attempts** to apply its algorithm to segment html (surrouding sentences with `<span class="sentence">[...]</span>`
+This repository **attempts** to detect [sentence boundaries](https://en.wikipedia.org/wiki/Sentence_boundary_disambiguation) (which is a harder problem than it appears at first sight).
+It also **attempts** to apply its algorithm to segment html (surrounding sentences with `<span class="sentence">[...]</span>`
 
-Don't use this repository in production as it's not battle tested yet. Some functions seems brittle and error recovery is inexistent. There are more mature tool out there like [nltk punkt](https://www.nltk.org/api/nltk.tokenize.html).
+Don't use this repository in production as it's not battle tested yet. Some functions seem brittle and error recovery is absent. There are more mature tool out there like [nltk punkt](https://www.nltk.org/api/nltk.tokenize.html).
 
 It has also only been tested on the english language.
 
-# Usage
+The HTML feature will respect existing inline tags (e.g `span`, `strong` ...). If a sentence partially overlaps with such tags, they will be closed and reopened. But this behavior **will mess** with blocking tags such as p, div et...
+
+In the future : 
+- Sentence detection will occur only inside HTML sections that contains not a single blocking tags
+- An opening blocking tag such as `<p>` will be interpreted as linebreak.
 
 Be warned that there are no setting files. If you need a different behavior (set of features, tweaks on the HTML output), you have to edit the source code itself.
 
+# Usage
+
 ## Installation
 
-Use python 3.7 or later. Check it with
+Use python 3.7 or later. Check it with :
 ```
 $ python3 --version
 ```
 
-Explanation : f-strings are used and there are place where dictionaries are expected to be ordered (which is almost the case for 3.6, but without any warranties).
+Explanation : f-strings are used and there are places where dictionaries are expected to be ordered (which is almost the case for 3.6, but without strong warranties).
 
 
 Install the dependencies with your favorite virtualenv manager. 
-Unless you have better options, I favor using venv as follow :
+Unless you have better options, I advocate for using using venv as follows:
 ```
 $ python3 -m venv .venv --without-pip
 $ source .venv/bin/activate # or .\venv\Scripts\activate on windows
@@ -92,8 +98,8 @@ I tried my luck with a [logistic regression](https://en.wikipedia.org/wiki/Logis
 
 I picked the logistic regression for convenience (I know this kind of model). I chose to not dig too much into the state-of-the-art approaches for the sake of the "challenge" to come to a solution myself.
 
-Patterns of sentences terminaison can be found in the `features.py` file. 
-They have been also handpicked and hardcoded after an explorative phase. I did not take time to assess their importance. But I started with only these features which granted around 90% + success rate.
+Patterns of sentences termination can be found in the `features.py` file. 
+They have been also handpicked and hardcoded after an explorative phase. I did not take time to assess their importance. But I started with only these features, which granted around 90% + success rate.
 
 I also added handpicked hardcoded abbreviations (advice from the wikipedia page) and also added a numerical feature (number of words).
 Both improved the model on both corpus.
@@ -101,12 +107,12 @@ Both improved the model on both corpus.
 
 # Results
 
-On terminaison candidates (which are linebreaks, punctuation and special symbols (?!;:.), and also .".
+On termination candidates (which are linebreaks, punctuation and special symbols (?!;:.), and also .".
 The Logistic regression **touts a 98%+ classification success rate** on both brown and wsj dataset.
 But the model is not refined at all and work remains. Specifically: 
-- Overlearning may be a reality, the common crossvalidation step (intra or intercorpus) has not been done.
-- Coefficients on the logistic regression have not been inspected at all. Some features could be excluded.
-- Some rare (yet with a frequency that has to be determined) terminaison points were not considered by our model as valid candidates, hence they were not counted as missed as they should (this is a common pitfall, as pointed by the article cited at the end of the readme).
+- Over-learning may be a reality, the common cross-validation step (intra or inter-corpus) has not been done.
+- Coefficients in the logistic regression have not been inspected at all. Some features could be excluded.
+- Some rare (yet with a frequency that has to be determined) termination points were not considered by our model as valid candidates, hence they were not counted as missed as they should (this is a common pitfall, as pointed by the article cited at the end of the readme).
 
 # Notes
 
@@ -121,11 +127,12 @@ This repository has been set up for a recruitement purpose. I don't think I'll i
 
 ## TODOS And Ideas
 
-- Treat gracefully erroneous input (like unexisting files)
-- Inspect and improve the model, use crossvalidation, inspect awesome fails (i.e couple of sentences where the model gives high confidenceand yet fails miserably)
-- Normalisation step of unicode characters (cf article at the end).
+- Treat gracefully erroneous input (like unfindable files)
+- Turn dictionnary iterators.
+- Inspect and improve the model, use crossvalidation, inspect awesome fails (i.e couples of sentences where the model gives high confidence and yet fails miserably)
+- Normalisation step on user inputs of unicode characters (cf article at the end of the readme).
 - Plot the ROC curve !
-- Test more thorougly html and text input, possibly with a generation mechanism.
+- Test more thoroughly html and text input, possibly with a generation mechanism.
 - Refactor/Comment hard-to-reason-about functions
 - Separate dev requirements (black, pytest, jupyter) from user requirements
 - Dokerize the application.
@@ -133,6 +140,7 @@ This repository has been set up for a recruitement purpose. I don't think I'll i
 - Consider that False positive may be more damaging than False negative and adapt the classifier. Maybe setting the coefficient for the feature "number of words" to a fixed level, a bit more impactful than its trained value.
 - Use beautiful soup instead of naive markup detection using regexes.
 - Consider false posivite patterns such as the ellipis (...)
+- Train on the more datasets (such as the other datasets exposed by Read. & al)
 
 
 ## Credits
