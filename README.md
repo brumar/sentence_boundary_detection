@@ -130,7 +130,8 @@ This repository has been set up for a recruitement purpose. I don't think I'll i
 - Treat gracefully erroneous input (like unfindable files)
 - Turn dictionnary iterators.
 - Inspect and improve the model, use crossvalidation, inspect awesome fails (i.e couples of sentences where the model gives high confidence and yet fails miserably)
-- Normalisation step on user inputs of unicode characters (cf article at the end of the readme).
+- Normalisation step on user inputs of unicode characters (cf article at the end of the readme)
+- [html special cars](https://www.degraeve.com/reference/specialcharacters.php) must be taken care of (presence of symbols such as ;)
 - Plot the ROC curve !
 - Test more thoroughly html and text input, possibly with a generation mechanism.
 - Refactor/Comment hard-to-reason-about functions
