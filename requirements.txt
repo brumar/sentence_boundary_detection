@@ -8,7 +8,7 @@ bleach==3.1.0
 cffi==1.13.2
 cfgv==2.0.1
 Click==7.0
-cryptography==2.8
+cryptography==3.2
 cycler==0.10.0
 decorator==4.4.1
 defusedxml==0.6.0
